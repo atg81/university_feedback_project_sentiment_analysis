@@ -1,103 +1,122 @@
-# Turkish Universities Sentiment Analysis Dataset (Real + Synthetic)
+# Turkish University Sentiment Analysis Model
 
-This dataset contains **Turkish tweets related to universities** collected from the Twitter/X platform and labeled for **sentiment analysis**.
+Bu proje, üniversite geri bildirimlerinin duygu analizini gerçekleştirmek amacıyla geliştirilmiş bir makine öğrenmesi modelini içermektedir.
 
-The dataset was created for the research study:
-
-**"Deep Learning Based Sentiment Analysis of Turkish Universities on X"**
-
-It includes both:
-- **Real tweets collected via Twitter/X API**
-- **Synthetic tweets generated using LLM-based paraphrasing** to balance the sentiment distribution
+Model, daha sonra geliştirilen **Üniversite Geri Bildirim Analiz Sistemi** projesinde kullanılmak üzere eğitilmiş ve başarıyla entegre edilmiştir.
 
 ---
 
-## Files
+## Projenin Amacı
 
-### 1) `real_dataset.csv`
-Contains only real tweets related to Turkish universities, collected from publicly available Twitter/X accounts.
+Bu çalışmanın amacı, kullanıcıların sisteme gönderdikleri geri bildirimlerin duygu durumunu otomatik olarak analiz edebilecek bir makine öğrenmesi modeli geliştirmektir.
 
-**Columns:**
-- `type` : data type (tweet)
-- `url` : tweet URL (source evidence)
-- `tags` : sentiment label
-- `text` : tweet content
-- `createdAt` : tweet creation time
-- `location` : location info (if available)
-- `authorUserName` : tweet author username
-- `university` : referenced university category
+Model sayesinde kullanıcı yorumları;
+
+- 😊 Olumlu (Positive)
+- 😟 Olumsuz (Negative)
+
+olarak otomatik sınıflandırılmaktadır.
 
 ---
 
-### 2) `real_synthetic_dataset.csv`
-Contains both real and synthetic tweets merged into one dataset.
+## Kullanılan Teknolojiler
 
-**Columns:**
-- `text` : tweet content
-- `tags` : sentiment label
-- `is_synth` : indicates whether the sample is real or synthetic
-- `university` : referenced university category
-
----
-
-## Labels
-
-### Sentiment (`tags`)
-- `0` = Negative
-- `1` = Positive
-
-### Synthetic Flag (`is_synth`)
-- `0` = Real tweet (collected via API)
-- `1` = Synthetic tweet (LLM paraphrased)
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Joblib
+- Jupyter Notebook
 
 ---
 
-## Data Collection and Labeling Process
+## Veri Ön İşleme
 
-1. Tweets were collected from **public Twitter/X accounts** via the Twitter/X API.
-2. Approximately **7,500 tweets** were manually labeled with sentiment classes (`0`, `1`, and `9`).
-3. A **BERTurk model** was fine-tuned using the manually labeled dataset.
-4. The fine-tuned model was used to automatically label newly collected university-related tweets.
-5. Automatically labeled tweets were manually reviewed to ensure label quality.
-6. The real dataset was imbalanced (**~75% negative, ~25% positive**).
-7. To balance the dataset, around **6,000 synthetic tweets** were generated using **LLM-based paraphrasing (ChatGPT-5)**.
-8. Synthetic samples were manually reviewed to preserve sentiment meaning.
-9. Duplicate and near-duplicate texts were filtered using **LSH MinHash clustering**.
+Model eğitilmeden önce metinler çeşitli ön işleme adımlarından geçirilmiştir.
 
----
+Uygulanan işlemler:
 
-## Dataset Statistics
+- Küçük harfe dönüştürme
+- URL temizleme
+- @mention temizleme
+- Emoji kaldırma
+- Noktalama işaretlerinin kaldırılması
+- Sayıların kaldırılması
+- Gereksiz boşlukların temizlenmesi
 
-- Real tweets: **11,020**
-- Synthetic tweets: **6,168**
-- Total samples: **17,188**
+Bu işlemler sayesinde modelin daha doğru öğrenmesi hedeflenmiştir.
 
 ---
 
-## Notes
+## Özellik Çıkarımı
 
-- This dataset is shared for **research and educational purposes**.
-- Tweets were collected only from publicly accessible accounts.
-- Synthetic samples were created via paraphrasing to increase data diversity while preserving sentiment.
+Metinler sayısal verilere dönüştürülmeden makine öğrenmesi algoritmaları tarafından işlenemeyeceği için TF-IDF (Term Frequency - Inverse Document Frequency) yöntemi kullanılmıştır.
 
----
-
-## Suggested Use Cases
-
-- Sentiment analysis of Turkish universities on Twitter/X
-- Turkish NLP benchmarking
-- Text classification tasks
-- Fine-tuning transformer-based models (BERTurk, ELECTRA, RoBERTa, etc.)
-- Social media analysis and opinion mining
+TF-IDF ile her yorum sayısal özellik vektörlerine dönüştürülerek model eğitimine hazır hale getirilmiştir.
 
 ---
 
-## Citation
+## Karşılaştırılan Modeller
 
-If you use this dataset in academic work, please cite the Kaggle dataset page or the associated publication.
+Bu çalışma kapsamında farklı makine öğrenmesi algoritmaları karşılaştırılmıştır.
+
+- Logistic Regression
+- Linear Support Vector Machine (Linear SVM)
+- Multinomial Naive Bayes
+
+Performans karşılaştırmaları sonucunda en başarılı model seçilmiştir.
 
 ---
 
-## License
+## Model Performansı
 
-Please check the Kaggle license selected for this dataset.
+| Model | Accuracy |
+|--------|----------|
+| Linear SVM | **90.06%** |
+| Logistic Regression | 88.11% |
+| Multinomial Naive Bayes | 83.39% |
+
+Yapılan değerlendirmeler sonucunda yaklaşık **%90 doğruluk oranı** ile en başarılı sonucu veren **Linear SVM** modeli tercih edilmiştir.
+
+---
+
+## Modelin Kaydedilmesi
+
+Eğitim tamamlandıktan sonra model tekrar eğitilmesine gerek kalmaması amacıyla Joblib kullanılarak kaydedilmiştir.
+
+Üretilen dosyalar:
+
+- sentiment_model.pkl
+- tfidf_vectorizer.pkl
+
+Bu dosyalar daha sonra FastAPI tabanlı projeye entegre edilmiştir.
+
+---
+
+## Test Süreci
+
+Eğitilen model;
+
+- Gerçek kullanıcı yorumları
+- Örnek üniversite geri bildirimleri
+- Pozitif ve negatif senaryolar
+
+üzerinde test edilmiştir.
+
+Modelin tahminleri Confusion Matrix ve Accuracy, Precision, Recall ve F1-Score metrikleri ile değerlendirilmiştir.
+
+---
+
+## Proje ile İlişkisi
+
+Bu repo yalnızca makine öğrenmesi modelinin geliştirilme sürecini içermektedir.
+
+Modelin kullanıldığı tam uygulama aşağıdaki projede bulunmaktadır:
+
+👉 https://github.com/KULLANICI_ADIN/university_feed_back_project
+
+---
+
+## Lisans
+
+Bu proje eğitim ve akademik amaçlarla geliştirilmiştir.
