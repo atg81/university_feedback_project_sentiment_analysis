@@ -113,7 +113,7 @@ Bu repo yalnızca makine öğrenmesi modelinin geliştirilme sürecini içermekt
 
 Modelin kullanıldığı tam uygulama aşağıdaki projede bulunmaktadır:
 
-👉 https://github.com/KULLANICI_ADIN/university_feed_back_project
+👉 https://github.com/atg81/university_feed_back_project
 
 ---
 
